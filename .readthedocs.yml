@@ -5,12 +5,14 @@
 # Required
 version: 2
 
+# Build documentation in the docs/ director with Sphinx
 sphinx:
   configuration: docs/conf.py
 
-formats: all
+formats: all # build docs in all additional formats: htmlzip, pdf, epub
 
+# Python build requirements
 python:
-  version: 3.7
+  build.tools.python: 3.7 # "version" is deprecated, replaced by build.tools.python
   install:
     - requirements: req-both.txt

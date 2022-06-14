@@ -17,9 +17,9 @@ sys.path.insert(0, os.path.abspath('../'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'py_grama'
+project = 'py_grama_test'
 copyright = '2022, Zachary del Rosario'
-author = 'Zachary del Rosario'
+author = 'Zachary del Rosario MAAEVE TEST'
 
 # The full version, including alpha/beta/rc tags
 release = '0.3.3'
