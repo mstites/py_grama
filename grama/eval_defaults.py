@@ -49,6 +49,8 @@ def eval_df(model, df=None, append=True, verbose=True):
     """
     if df is None:
         raise ValueError("No input df given")
+    if type(model) is tuple:
+        raise TypeError("Given model argument is type tuple. Have you declared your model with an extra comma after the closing `)`?")
     if len(model.functions) == 0:
         raise ValueError("Given model has no functions")
     out_intersect = set(df.columns).intersection(model.out)
