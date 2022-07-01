@@ -43,8 +43,8 @@ def invariant_checks(model, df):
 
     # Model checks
     if type(model) is tuple:
-        raise TypeError("Given model argument is type tuple. Have you declared \
-            your model with an extra comma after the closing `)`?")
+        raise TypeError("Given model argument is type tuple. Have you " + \
+            "declared your model with an extra comma after the closing `)`?")
     elif type(model) is not Model:
         raise TypeError("Type gr.Model was expected, a " + str(type(model)) + \
             " was passed.")
