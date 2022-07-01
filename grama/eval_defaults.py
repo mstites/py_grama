@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 import itertools
-from grama import add_pipe, tran_outer, custom_formatwarning
+from grama import add_pipe, tran_outer, custom_formatwarning, Model
 from numbers import Integral
 from numpy import ones, eye, tile, atleast_2d
 from numpy.random import seed as set_seed
@@ -21,6 +21,36 @@ from toolz import curry
 from warnings import formatwarning, catch_warnings, simplefilter
 
 formatwarning = custom_formatwarning
+
+# Helper functions
+# --------------------------------------------------
+def invariant_checks(model, df):
+    r"""Helper function to group common invariant checks for eval functions.
+    
+    Throws errors for invalid DataFrame or Model inputs.
+    
+    Args:
+        model (gr.Model): Model to check
+        df (DataFrame): Input dataframe to check
+
+    """
+    # Dataframe 
+    if df is None:
+        raise TypeError("No input df given")
+    elif type(df) is not DataFrame:
+        raise TypeError("Type DataFrame was expected, a " + str(type(df)) + \
+            " was passed.")
+
+    # Model checks
+    if type(model) is tuple:
+        raise TypeError("Given model argument is type tuple. Have you declared \
+            your model with an extra comma after the closing `)`?")
+    elif type(model) is not Model:
+        raise TypeError("Type gr.Model was expected, a " + str(type(model)) + \
+            " was passed.")
+    if len(model.functions) == 0:
+        raise ValueError("Given model has no functions")
+    return
 
 ## Default evaluation function
 # --------------------------------------------------
@@ -47,12 +77,7 @@ def eval_df(model, df=None, append=True, verbose=True):
         md >> gr.ev_df(df=df)
 
     """
-    if df is None:
-        raise ValueError("No input df given")
-    if type(model) is tuple:
-        raise TypeError("Given model argument is type tuple. Have you declared your model with an extra comma after the closing `)`?")
-    if len(model.functions) == 0:
-        raise ValueError("Given model has no functions")
+    invariant_checks(model, df) # perform checks on inputs
     out_intersect = set(df.columns).intersection(model.out)
     if (len(out_intersect) > 0) and verbose:
         print(
