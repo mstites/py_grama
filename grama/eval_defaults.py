@@ -102,7 +102,7 @@ def eval_df(model, df=None, append=True, verbose=True):
         md >> gr.ev_df(df=df)
 
     """
-    invariant_checks(model, df) # perform checks on validity of inputs
+    invariants_eval(model, df) # perform checks on validity of inputs
     out_intersect = set(df.columns).intersection(model.out)
     if (len(out_intersect) > 0) and verbose:
         print(
@@ -154,7 +154,7 @@ def eval_nominal(model, df_det=None, append=True, skip=False):
         md >> gr.ev_nominal(df_det="nom")
 
     """
-    invariant_checks(model, df_det) # perform checks on validity of inputs
+    invariants_eval(model, df_det, df_det=True) # perform checks on validity of inputs
     ## Draw from underlying gaussian
     quantiles = ones((1, model.n_var_rand)) * 0.5  # Median
 
@@ -207,7 +207,7 @@ def eval_grad_fd(model, h=1e-8, df_base=None, var=None, append=True, skip=False)
         df_grad = md >> gr.ev_grad_fd(df_base=df_nom)
 
     """
-    invariant_checks(model, df_base) # perform checks on validity of inputs
+    invariants_eval(model, df_base) # perform checks on validity of inputs
     ## Check other invariants
     if not set(model.var).issubset(set(df_base.columns)):
         raise ValueError("model.var must be subset of df_base.columns")
@@ -313,7 +313,7 @@ def eval_conservative(model, quantiles=None, df_det=None, append=True, skip=Fals
         md >> gr.ev_conservative(df_det="nom")
 
     """
-    invariant_checks(model, df_det) # perform checks on validity of inputs
+    invariants_eval(model, df_det, df_det=True) # perform checks on validity of inputs
     ## Default behavior
     if quantiles is None:
         print("eval_conservative() using quantile default 0.01;")
@@ -442,7 +442,7 @@ def eval_sample(model, n=None, df_det=None, seed=None, append=True, skip=False, 
 
 
     """
-    invariant_checks(model, df_det) # perform checks on validity of inputs
+    invariants_eval(model, df_det, df_det=True) # perform checks on validity of inputs
     ## Check other invariants
     if n is None:
         raise ValueError("Must provide a valid n value.")
