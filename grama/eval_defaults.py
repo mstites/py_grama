@@ -49,7 +49,7 @@ def invariants_eval(model, df, df_det=False):
                 raise ValueError("df_det shortcut string invalid")
         ## Other type checking
         elif not isinstance(df, DataFrame):
-            return TypeError("df_det must be DataFrame or 'nom' A " + 
+            return TypeError("df_det must be DataFrame or 'nom'. A " + 
             str(type(df)) + "was passed.")
         ## DataFrame validity check
         else:
