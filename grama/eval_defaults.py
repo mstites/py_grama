@@ -24,33 +24,58 @@ formatwarning = custom_formatwarning
 
 # Helper functions
 # --------------------------------------------------
-def invariant_checks(model, df):
-    r"""Helper function to group common invariant checks for eval functions.
+def invariants_eval(model, df, df_det=False):
+    r"""Helper function to group common invariant checks for eval functions and
+    prep DataFrame and Model objects for eval functions.
     
     Throws errors for invalid DataFrame or Model inputs.
     
     Args:
         model (gr.Model): Model to check
         df (DataFrame): Input dataframe to check
+        df_det (bool): Function takes "df_det" (deterministic variable samples) value?
 
     """
-    # Dataframe 
-    if df is None:
-        raise TypeError("No input df given")
-    elif type(df) is not DataFrame:
-        raise TypeError("Type DataFrame was expected, a " + str(type(df)) + \
+    ## DataFrame check
+    if df_det:
+        if isinstance(df, None):                
+            raise TypeError("No input df given. df_det must be DataFrame or 'nom'")
+        ## String shortcut
+        elif isinstance(df, str): 
+            if df_det == "nom":
+                    # create nominal values for deterministic vars from model
+                    df = model.det_nom()
+            else:
+                raise ValueError("df_det shortcut string invalid")
+        ## Other type checking
+        elif not isinstance(df, DataFrame):
+            return TypeError("df_det must be DataFrame or 'nom' A " + 
+            str(type(df)) + "was passed.")
+        ## DataFrame validity check
+        else:
+            ## Check invariant; model inputs must be subset of df columns
+            if not set(self.var_det).issubset(set(df_det.columns)):
+                raise ValueError("model.var_det not a subset of given columns")
+    # Errors for not df_det
+    else:
+        if isinstance(df, None):
+            raise TypeError("No input df given")
+        elif isinstance(df, DataFrame):
+            raise TypeError("Type DataFrame was expected, a " + str(type(df)) +
             " was passed.")
 
-    # Model checks
+    ##  Model checks
+    # Tuple Trap
     if type(model) is tuple:
         raise TypeError("Given model argument is type tuple. Have you " + \
             "declared your model with an extra comma after the closing `)`?")
     elif type(model) is not Model:
         raise TypeError("Type gr.Model was expected, a " + str(type(model)) + \
             " was passed.")
-    if len(model.functions) == 0:
+    elif len(model.functions) == 0:
         raise ValueError("Given model has no functions")
-    return
+    
+    return None
 
 ## Default evaluation function
 # --------------------------------------------------
