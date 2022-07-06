@@ -38,7 +38,7 @@ def invariants_eval(model, df, df_det=False):
     """
     ## DataFrame check
     if df_det:
-        if isinstance(df, None):                
+        if type(df) is None:                
             raise TypeError("No input df given. df_det must be DataFrame or 'nom'")
         ## String shortcut
         elif isinstance(df, str): 
@@ -58,7 +58,7 @@ def invariants_eval(model, df, df_det=False):
                 raise ValueError("model.var_det not a subset of given columns")
     # Errors for not df_det
     else:
-        if isinstance(df, None):
+        if type(df) is None:
             raise TypeError("No input df given")
         elif isinstance(df, DataFrame):
             raise TypeError("Type DataFrame was expected, a " + str(type(df)) +
