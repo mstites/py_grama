@@ -54,7 +54,7 @@ def invariants_eval(model, df, df_det=False):
         ## DataFrame validity check
         else:
             ## Check invariant; model inputs must be subset of df columns
-            if not set(self.var_det).issubset(set(df_det.columns)):
+            if not set(model.var_det).issubset(set(df.columns)):
                 raise ValueError("model.var_det not a subset of given columns")
     # Errors for not df_det
     else:
