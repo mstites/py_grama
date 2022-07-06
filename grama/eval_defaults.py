@@ -42,7 +42,7 @@ def invariants_eval(model, df, df_det=False):
             raise TypeError("No input df given. df_det must be DataFrame or 'nom'")
         ## String shortcut
         elif isinstance(df, str): 
-            if df_det == "nom":
+            if df == "nom":
                     # create nominal values for deterministic vars from model
                     df = model.det_nom()
             else:
