@@ -24,7 +24,7 @@ formatwarning = custom_formatwarning
 
 # Helper functions
 # --------------------------------------------------
-def invariants_eval(model, df, df_det=False):
+def invariants_eval(model, df, pass_strings = False):
     r"""Helper function to group common invariant checks for eval functions and
     prep DataFrame and Model objects for eval functions.
     
@@ -33,11 +33,32 @@ def invariants_eval(model, df, df_det=False):
     Args:
         model (gr.Model): Model to check
         df (DataFrame): Input dataframe to check
-        df_det (bool): Function takes "df_det" (deterministic variable samples) value?
+        pass_strings (bool): If the function should pass strings
+        # df_det_func (bool): Function takes "df_det" (deterministic variable samples) value?
 
     """
     ## DataFrame check
-    if df_det:
+    if type(df) is None:                
+            raise TypeError("No input df given. df_det must be DataFrame or 'nom'")
+        ## String shortcut
+    elif isinstance(df, str) and pass_strings:
+        pass
+    elif isinstance
+
+
+
+
+        if df == "nom":
+                # create nominal values for deterministic vars from model
+                df = model.det_nom()
+        else:
+            raise ValueError("df_det shortcut string invalid")
+
+
+
+
+    ## DataFrame check OLD
+    if df_det_func:
         if type(df) is None:                
             raise TypeError("No input df given. df_det must be DataFrame or 'nom'")
         ## String shortcut
@@ -48,21 +69,21 @@ def invariants_eval(model, df, df_det=False):
             else:
                 raise ValueError("df_det shortcut string invalid")
         ## Other type checking
-        elif not isinstance(df, DataFrame):
-            return TypeError("df_det must be DataFrame or 'nom'. A " + 
-            str(type(df)) + "was passed.")
+        # elif not isinstance(df, DataFrame):
+        #     return TypeError("df_det must be DataFrame or 'nom'. A " + 
+        #     str(type(df)) + "was passed.")
         ## DataFrame validity check
         else:
             ## Check invariant; model inputs must be subset of df columns
             if not set(model.var_det).issubset(set(df.columns)):
                 raise ValueError("model.var_det not a subset of given columns")
-    # Errors for not df_det
+    # Errors for not df_det_func
     else:
         if type(df) is None:
             raise TypeError("No input df given")
-        elif isinstance(df, DataFrame):
-            raise TypeError("Type DataFrame was expected, a " + str(type(df)) +
-            " was passed.")
+        # elif isinstance(df, DataFrame):
+        #     raise TypeError("Type DataFrame was expected, a " + str(type(df)) +
+        #     " was passed.")
 
     ##  Model checks
     # Tuple Trap
@@ -75,7 +96,7 @@ def invariants_eval(model, df, df_det=False):
     elif len(model.functions) == 0:
         raise ValueError("Given model has no functions")
     
-    return None
+    return model, df
 
 ## Default evaluation function
 # --------------------------------------------------
@@ -102,7 +123,7 @@ def eval_df(model, df=None, append=True, verbose=True):
         md >> gr.ev_df(df=df)
 
     """
-    invariants_eval(model, df) # perform checks on validity of inputs
+    model, df = invariants_eval(model, df) # perform checks on validity of inputs
     out_intersect = set(df.columns).intersection(model.out)
     if (len(out_intersect) > 0) and verbose:
         print(
@@ -154,7 +175,7 @@ def eval_nominal(model, df_det=None, append=True, skip=False):
         md >> gr.ev_nominal(df_det="nom")
 
     """
-    invariants_eval(model, df_det, df_det=True) # perform checks on validity of inputs
+    model, df_det = invariants_eval(model, df_det, df_det_func=True)
     ## Draw from underlying gaussian
     quantiles = ones((1, model.n_var_rand)) * 0.5  # Median
 
@@ -207,7 +228,7 @@ def eval_grad_fd(model, h=1e-8, df_base=None, var=None, append=True, skip=False)
         df_grad = md >> gr.ev_grad_fd(df_base=df_nom)
 
     """
-    invariants_eval(model, df_base) # perform checks on validity of inputs
+    # model, df_det = invariants_eval(model, df_det, df_det_func=True)
     ## Check other invariants
     if not set(model.var).issubset(set(df_base.columns)):
         raise ValueError("model.var must be subset of df_base.columns")
@@ -313,7 +334,7 @@ def eval_conservative(model, quantiles=None, df_det=None, append=True, skip=Fals
         md >> gr.ev_conservative(df_det="nom")
 
     """
-    invariants_eval(model, df_det, df_det=True) # perform checks on validity of inputs
+    model, df_det = invariants_eval(model, df_det, df_det_func=True)
     ## Default behavior
     if quantiles is None:
         print("eval_conservative() using quantile default 0.01;")
@@ -442,7 +463,7 @@ def eval_sample(model, n=None, df_det=None, seed=None, append=True, skip=False, 
 
 
     """
-    invariants_eval(model, df_det, df_det=True) # perform checks on validity of inputs
+    model, df_det = invariants_eval(model, df_det, df_det_func=True)
     ## Check other invariants
     if n is None:
         raise ValueError("Must provide a valid n value.")
