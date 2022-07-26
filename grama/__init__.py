@@ -39,11 +39,3 @@ from .tran_is import *
 
 from .fit_synonyms import *
 from .plot_auto import *
-
-## Load extras
-# --------------------------------------------------
-from .eval import *
-from .fit import *
-from .psdr import *
-from .tran import *
-from .spc import *
