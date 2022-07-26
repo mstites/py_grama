@@ -1,0 +1,7 @@
+lolopy
+pymatgen==2021.2.8.1
+matminer
+sklearn
+statsmodels
+pyDOE
+umap-learn
