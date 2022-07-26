@@ -1,3 +1,0 @@
--r requirements.txt
--r req-extras.txt
--r docs/requirements.txt

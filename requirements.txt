@@ -1,7 +1,0 @@
-matplotlib
-numpy>=1.15
-pandas
-plotnine>=0.8.0
-scipy
-toolz
-networkx
