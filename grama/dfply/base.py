@@ -62,16 +62,20 @@ def _delayed_function(function, args, kwargs):
 
 
 def make_symbolic(f):
+    print("make_symbolic")
     def wrapper(*args, **kwargs):
         delay = _check_delayed_eval(args, kwargs)
         if delay:
             delayed = _delayed_function(f, args, kwargs)
+            print("delay")
             return Intention(delayed)
         return f(*args, **kwargs)
 
     ## Preserve documentation
     wrapper.__doc__ = f.__doc__
     wrapper.__name__ = f.__name__
+    print(wrapper, "\ndoc: ", wrapper.__doc__, 
+        "\nname:", wrapper.__name__, "\ntype: ", type(wrapper))
 
     return wrapper
 
@@ -345,6 +349,7 @@ def symbolic_evaluation(
     function=None, eval_symbols=True, eval_as_label=[], eval_as_selector=[]
 ):
     if function:
+        print("returning function from symbolic_evaluation: ", function)
         return IntentionEvaluator(function)
 
     @wraps(function)
@@ -406,6 +411,67 @@ def dfpipe(f):
 
 
 def dfdelegate(f):
-    class addName(group_delegation):
-        __name__ = f.__name__
-    return addName(group_delegation(symbolic_evaluation(f)))
+    # class addName(group_delegation):
+    #     __name__ = f.__name__
+    # return addName(group_delegation(symbolic_evaluation(f)))
+    print("\n\ndfdelegate: ", f.__name__)
+    
+    # class addName(group_delegation):
+    #     __name__ = f.__name__
+    def addName(a):
+        a.__name__ = f.__name__
+        return a
+
+    def status_check(var, stage):
+        print("Step ", stage, "\nType: ", type(var), "\n__name__: ",
+            var.__name__, "\n__doc__: ", f.__doc__)
+    
+    a = symbolic_evaluation(f)
+    status_check(a, 1)
+    # Returns: 
+    # # Type: <class 'grama.dfply.base.IntentionEvaluator'>
+    # # __name__: IntentionEvaluator, __doc__: correct
+
+    a = group_delegation(a)
+    status_check(a, 2)
+    # Returns:
+    # # Type: <class 'grama.dfply.base.group_delegation'> 
+    # # __name__: group_delegation, __doc__: correct
+
+    a = addName(a)
+    status_check(a, 3)
+    # Returns:
+    # # Type: <class 'grama.dfply.base.dfdelegate.<locals>.addName'> 
+    # # __name__: tran_full_join, __doc__:correct
+
+    return a
+
+class pipe(object):
+    __name__ = "pipe"
+
+    def __init__(self, function):
+        self.function = function
+        self.__doc__ = function.__doc__
+
+        self.chained_pipes = []
+
+    def __rshift__(self, other):
+        assert isinstance(other, pipe)
+        self.chained_pipes.append(other)
+        return self
+
+    def __rrshift__(self, other):
+        other_copy = other.copy()
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            other_copy._grouped_by = getattr(other, '_grouped_by', None)
+
+        result = self.function(other_copy)
+
+        for p in self.chained_pipes:
+            result = p.__rrshift__(result)
+        return result
+
+    def __call__(self, *args, **kwargs):
+        return pipe(lambda x: self.function(x, *args, **kwargs))

@@ -19,7 +19,7 @@ __all__ = [
     "tf_bind_cols",
 ]
 
-from .base import dfdelegate
+from .base import dfdelegate, make_symbolic
 from .. import add_pipe
 from pandas import concat
 
@@ -47,7 +47,7 @@ def get_join_parameters(join_kwargs):
     return left_on, right_on, suffixes
 
 
-@dfdelegate
+@make_symbolic
 def tran_inner_join(df, other, **kwargs):
     """
     Joins on values present in both DataFrames.
